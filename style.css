@@ -1,0 +1,12 @@
+#app-root {
+    font-family: "Gill Sans", sans-serif;
+}
+
+#data {
+    display: flex;
+    justify-content: space-between;
+}
+
+#data ul {
+    flex: 1;
+}
