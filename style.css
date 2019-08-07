@@ -10,3 +10,21 @@
 #data ul {
     flex: 1;
 }
+
+#nav-btns {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+#nav-btns * {
+    padding: 0.5rem;
+}
+
+.active {
+    border: solid 1px tomato;
+    border-radius: 5px;
+    background-color: tomato;
+    color: white;
+    text-decoration: none;
+}
