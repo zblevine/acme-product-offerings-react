@@ -5,10 +5,12 @@ class App extends React.Component {
         super()
         this.state = {
             products: [],
-            companies: []
+            companies: [],
+            view: ''
         }
     }
-    render() {
+    componentDidMount() {
+        /* api calls */
         Promise.all([
             fetch(`${API}/products`),
             fetch(`${API}/companies`)
@@ -17,12 +19,20 @@ class App extends React.Component {
         }).then(([products, companies]) => {
             this.setState({companies, products})
         })
-        const {products, companies} = this.state
-        const h1DataCount = React.createElement('h1', null, `Acme - We have ${products.length} Products and ${companies.length} Companies`)
-        const ulProducts = React.createElement('ul', null, products.map(product => React.createElement('li', null, product.name)))
-        const ulCompanies = React.createElement('ul', null, companies.map(company => React.createElement('li', null, company.name)))
-        const divDataContainer = React.createElement('div', {id: 'data'}, ulProducts, ulCompanies)
-        return React.createElement('div', null, h1DataCount, divDataContainer)
+        /* setups */
+        const hashLoader = (ev = {}) => {
+            let view = window.location.hash.slice(1)
+            view = view ? view : 'companies'
+            this.setState({ view })
+        }
+        window.addEventListener('hashchange', ev => hashLoader(ev))
+        hashLoader()
+    }
+    render() {
+        const { companies, products, view } = this.state
+        const nav = React.createElement(Nav, { companies, products, view })
+        const chosenView = view === 'companies' ? React.createElement(CompanyList, { companies }) : React.createElement(ProductList, { products })
+        return React.createElement('div', null, nav, chosenView)
     }
 }
 
