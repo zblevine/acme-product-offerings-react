@@ -18,8 +18,7 @@
         const API = 'https://acme-users-api-rev.herokuapp.com/api'
         const { render } = ReactDOM
         const { HashRouter, Switch, Link, Route, Redirect } = ReactRouterDOM
-        const Nav = ({products, companies, path}) => {
-            console.log({products, companies, path})
+        const Nav = ({products, companies}) => {
             return (
                 <div id="header">
                     <h2>ACME OFFERINGS * REACT</h2>
@@ -31,12 +30,31 @@
             )
         }
 
-        const CompanyList = ({companies}) => {
-            const lis = companies.map(company => React.createElement('li', {key: company.id}, company.name));
-            return React.createElement('ul', null, lis);
+        const Companies = ({products, companies, offerings}) => {
+            // const lis = companies.map(company => {React.createElement('li', {key: company.id}, company.name}));
+            const getProductName = (offering) => {
+                return products.filter(product => product.id === offering.productId)[0].name;
+            }
+            const offeringList = (company) => {
+                return offerings.filter(offering => offering.companyId === company.id)
+                                .map(offering => (
+                                    <li key={offering.id}>{getProductName(offering)} {offering.price}</li>
+                                ));
+            }
+            const lis = companies.map(company => (
+                <li id="companyList" key={company.id}>
+                    <h4>company.name</h4>
+                    <p>company.catchphrase</p>
+                    <p>Offering:</p>
+                    <ul>{ offeringList(company) }</ul>
+                </li>
+            ));
+            return (
+                <ul>{ lis }</ul>
+            );
         }
 
-        const ProductList = ({products}) => {
+        const Products = ({products, companies, offerings}) => {
             const lis = products.map(product => React.createElement('li', {key: product.id}, `${product.name} - ${product.description}`));
             return React.createElement('ul', null, lis);
         }
@@ -68,9 +86,10 @@
                 const { products, companies, offerings } = this.state;
                 return (
                     <HashRouter>
-                        <Route render={ (props) => <Nav products= {products} companies = {companies} path = { props.location.pathname } /> } />
+                        <Route render={ () => <Nav products= {products} companies = {companies} /> } />
                         <Switch>
-                            
+                            <Route path='/companies' render={ () => <Companies companies = {companies} products = {products} offerings = {offerings} /> } />
+                            <Route path='/products' render={ () => <Companies companies = {companies} products = {products} offerings = {offerings} /> } />
                             <Redirect to='/companies' />
                         </Switch>
                     </HashRouter>
