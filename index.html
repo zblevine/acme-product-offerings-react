@@ -20,13 +20,14 @@
         const API = 'https://acme-users-api-rev.herokuapp.com/api'
         const { render } = ReactDOM
         const { HashRouter, Switch, Link, Route, Redirect } = ReactRouterDOM
-        const Nav = ({products, companies}) => {
+        const Nav = ({path, products, companies}) => {
+            console.log(path)
             return (
                 <div id="header">
                     <h2>ACME OFFERINGS * REACT</h2>
                     <nav>
-                        <Link to='/companies'>Companies ({ companies.length })</Link>
-                        <Link to='/products'>Products ({ products.length })</Link>
+                        <Link to='/companies' className={path === '/companies' ? 'active' : ''}>Companies ({ companies.length })</Link>
+                        <Link to='/products' className={path === '/products' ? 'active' : ''}>Products ({ products.length })</Link>
                     </nav>
                 </div>
             )
@@ -102,9 +103,9 @@
                 const { products, companies, offerings } = this.state;
                 return (
                     <HashRouter>
-                        <Route render={ () => <Nav products= {products} companies = {companies} /> } />
+                        <Route render={ ({location}) => <Nav path= {location.pathname} products= {products} companies = {companies} /> } />
                         <Switch>
-                            <Route path='/companies' render={ () => <Companies companies = {companies} products = {products} offerings = {offerings} /> } />
+                            <Route path='/companies' render={ () => <Companies {...this.state} /> } />
                             <Route path='/products' render={ () => <Products companies = {companies} products = {products} offerings = {offerings} /> } />
                             <Redirect to='/companies' />
                         </Switch>
