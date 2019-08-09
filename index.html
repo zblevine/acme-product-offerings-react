@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
     <title>ACME React Router</title>
 </head>
+
 <body>
     <div id="root"></div>
     <script type="text/babel">
@@ -31,7 +33,6 @@
         }
 
         const Companies = ({products, companies, offerings}) => {
-            // const lis = companies.map(company => {React.createElement('li', {key: company.id}, company.name}));
             const getProductName = (offering) => {
                 return products.filter(product => product.id === offering.productId)[0].name;
             }
@@ -43,8 +44,8 @@
             }
             const lis = companies.map(company => (
                 <li id="companyList" key={company.id}>
-                    <h4>company.name</h4>
-                    <p>company.catchphrase</p>
+                    <h4>{ company.name }</h4>
+                    <p>{ company.catchphrase }</p>
                     <p>Offering:</p>
                     <ul>{ offeringList(company) }</ul>
                 </li>
@@ -55,8 +56,23 @@
         }
 
         const Products = ({products, companies, offerings}) => {
-            const lis = products.map(product => React.createElement('li', {key: product.id}, `${product.name} - ${product.description}`));
-            return React.createElement('ul', null, lis);
+            const getCompanyList = (product) => {
+                return offerings.filter(offering => offering.productId === product.id)
+                    .map(offering => <li key={offering.id}>{companies.find(company => company.id === offering.companyId).name}</li>);
+            };
+            console.log(products)
+            const lis = products.map(product => (
+                <li id="productList" key={product.id}>
+                    <h4>{ product.name }</h4>
+                    <p>${ product.suggestedPrice.toFixed(2) }</p>
+                    <p>{ product.description }</p>
+                    <p>Offered By:</p>
+                    <ul>{ getCompanyList(product) }</ul>
+                </li>
+            ));
+            return (
+                <ul>{ lis }</ul>
+            );
         }
 
         class App extends React.Component {
@@ -89,7 +105,7 @@
                         <Route render={ () => <Nav products= {products} companies = {companies} /> } />
                         <Switch>
                             <Route path='/companies' render={ () => <Companies companies = {companies} products = {products} offerings = {offerings} /> } />
-                            <Route path='/products' render={ () => <Companies companies = {companies} products = {products} offerings = {offerings} /> } />
+                            <Route path='/products' render={ () => <Products companies = {companies} products = {products} offerings = {offerings} /> } />
                             <Redirect to='/companies' />
                         </Switch>
                     </HashRouter>
@@ -100,4 +116,5 @@
         render(<App />, root);
     </script>
 </body>
+
 </html>
