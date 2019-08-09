@@ -7,21 +7,28 @@
     <link rel="stylesheet" href="style.css">
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.0.1/react-router-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
-
     <title>ACME React Router</title>
 </head>
 <body>
     <div id="root"></div>
-
     <script type="text/babel">
         const API = 'https://acme-users-api-rev.herokuapp.com/api'
-
-        const Nav = ({companies, products, view}) => {
-            const productLink = React.createElement('a', { href: '#products', className: view === 'products' ? 'active' : ''}, `Products (${products.length})`);
-            const companyLink = React.createElement('a', { href: '#companies', className: view === 'companies' ? 'active' : ''}, `Companies (${companies.length})`);
-            return React.createElement('div', {id: 'nav-btns'}, productLink, companyLink);
+        const { render } = ReactDOM
+        const { HashRouter, Switch, Link, Route, Redirect } = ReactRouterDOM
+        const Nav = ({products, companies, path}) => {
+            console.log({products, companies, path})
+            return (
+                <div id="header">
+                    <h2>ACME OFFERINGS * REACT</h2>
+                    <nav>
+                        <Link to='/companies'>Companies ({ companies.length })</Link>
+                        <Link to='/products'>Products ({ products.length })</Link>
+                    </nav>
+                </div>
+            )
         }
 
         const CompanyList = ({companies}) => {
@@ -50,26 +57,28 @@
                     axios.get(`${API}/companies`),
                     axios.get(`${API}/offerings`)
                 ]).then(([products, companies, offerings]) => {
-                    this.setState({products, companies, offerings});
+                    this.setState({
+                        products: products.data,
+                        companies: companies.data,
+                        offerings: offerings.data
+                    });
                 })
             }
             render() {
                 const { products, companies, offerings } = this.state;
                 return (
                     <HashRouter>
-                        <Route render={ (props) => <Nav products= {products} companies = {companies} offerings = {offerings} path = { props.location.pathname } /> } />
+                        <Route render={ (props) => <Nav products= {products} companies = {companies} path = { props.location.pathname } /> } />
                         <Switch>
-                            <Route path='/companies' component = { Companies } />
-                            <Route path='/products' component = { Products } />
+                            
                             <Redirect to='/companies' />
                         </Switch>
                     </HashRouter>
                 );
             }
         }
-
-        const root = document.querySelector('#root')
-        render(<App />), root)
+        const root = document.querySelector('#root');
+        render(<App />, root);
     </script>
 </body>
 </html>
